@@ -1,0 +1,13 @@
+{
+    "host": "http://localhost:3000",
+    "port": "3000",
+    "mysql": {
+        "client": "mysql",
+        "connection": {
+            "host": "127.0.0.1",
+            "user": "wave_developer",
+            "password": "development8369",
+            "database": "payroll_test_schema"  
+        }
+    }
+}

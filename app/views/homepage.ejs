@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+
+</head>
+
+<body>
+
+    <div class="row">
+        <div class="col">
+            <div class ="alert alert-info">
+                    <h4 class="text-center">Payroll Report</h4>            
+           </div>
+        </div>
+    </div> 
+    <div class="row">
+        <div class="col">
+            <p class="text-center">Submit a new .csv timefile to update your payroll!</p>
+        </div>
+    </div> 
+    <div class="row">
+        <div class='col'>
+            <div class="text-center">
+                <div class="btn-group btn-group-lg">
+                    <button type="button" class="btn btn-primary" onclick="submitTimefile()">Submit File</button>
+                    <input type="file" class="btn btn-primary" id="csvPayrollFile">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <div class="text-center">
+                <div id="submissionStatus" class="alert alert-primary" role="alert">
+                    <p id="submissionMessage"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div>
+        <div class="text-center">
+            <table class="table table-striped">
+                 <thead>
+                    <tr>
+                        <th class="text-center">Employee ID</th>
+                        <th class="text-center">Pay Period</th>
+                        <th class="text-center">Amount Paid</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% for (var i = 0; i < payroll.length; i++) { %>
+                        <tr>
+                           <td>
+                                <%= payroll[i].employee_id %>
+                            </td>
+                            <td>
+                                <%= payroll[i].pay_period %>
+                            </td>
+                            <td>
+                                 $<%= payroll[i].amount_paid %>
+                            </td>
+                        </tr>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
+   
+   <script>
+
+        function submitTimefile() {
+
+            var submissionElement = document.getElementById("csvPayrollFile");
+
+            // check to see if the file is empty 
+            var files = submissionElement.files;
+
+
+            if (files.length == 0) {
+                setSubmissionMessage("No file uploaded: please select a file to upload to the server.");
+            } else {
+
+                setSubmissionMessage("Processing...");
+                var filename = submissionElement.value;
+                // create a new form data object to send over ajax
+                var formData = new FormData();
+
+                // append the csv file to the form data object 
+                formData.append("timefile", files[0]);
+
+                $.ajax({
+                    url: '/timefile',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: (JSON) => {
+                        setSubmissionMessage("Success!");
+                        updatePage(JSON);
+                    },
+                    error: (JSON) => {
+                        setSubmissionMessage(JSON.responseText);
+                    }
+                });
+            }
+
+
+        }
+
+        var updatePage = (responseJson) => {
+            setSubmissionMessage("Success!");
+            location.reload(true);
+        }
+
+        var timefileError = (responseJson) => {
+            setSubmissionMessage("Error: ");
+        }
+
+        var setSubmissionMessage = (message) => {
+            document.getElementById("submissionMessage").textContent = message;
+        }
+
+    </script>
+
+</body>
+
+</html>
+
